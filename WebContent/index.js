@@ -1,4 +1,4 @@
-const serverurl = "http://localhost:8080/CodeJamm2019/MyServlet";
+const serverurl = "http://localhost:8080/CodeJam2019/MyServlet";
 
 const profsDB = [{id:1, name:'Charles Broth'}, {id:2, name:'Frank Jerrie'}, {id:3, name:'Donald Pavis'}];
 
