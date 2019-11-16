@@ -1,9 +1,9 @@
-const serverurl = "http://localhost:8080/CodeJamm2019/MyServlet";
+const serverurl = "http://localhost:8080/CodeJam2019/MyServlet";
 
 const profsDB = [{id:1, name:'Charles Broth'}, {id:2, name:'Frank Jerrie'}, {id:3, name:'Donald Pavis'}];
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("heellooo!");
+    console.log("Loaded...");
     renderProfs();
 });
 
@@ -21,24 +21,29 @@ async function renderProfs(){
     });
 }
 
-document.getElementById("submit").onclick = function(e){
-	console.log("heeeeeyyyyy");
-	
+document.getElementById("submit").onclick = function(){
+	console.log("Submitting...");
     let text = document.getElementById('textbox').value;
     let list = document.getElementById('prof-list');
     let prof = list.options[list.selectedIndex].value;
 
+    if (text == "" || prof == ""){
+    	alert("Please input a professor and a message.");
+    	console.log("Submit cancelled");
+    	return;
+    }
+    
     let XHR = new XMLHttpRequest();
     let data = "id=" + encodeURIComponent(prof) + "text=" + encodeURIComponent(text);
 
     // Define what happens on successful data submission
     XHR.addEventListener('load', function(event) {
-        alert('Yeah! Data sent and response loaded.');
+        console.log('Yeah! Data sent and response loaded.');
     });
 
     // Define what happens in case of error
     XHR.addEventListener('error', function(event) {
-        alert('Oops! Something goes wrong.');
+        console.log('Oops! Something goes wrong.');
     });
 
     // Set up our request
@@ -49,8 +54,6 @@ document.getElementById("submit").onclick = function(e){
 
     // Finally, send our data.
     XHR.send(data);
-    
-    return false;
 }
 
 function queryProfs(){
@@ -63,7 +66,7 @@ function queryProfs(){
                 if (httpRequest.status === 200) {
                     return httpRequest.responseText;
                 } else {
-                alert('There was an issue getting the prof list...');
+                	alert('There was an issue getting the prof list...');
                 }
             }
         }
