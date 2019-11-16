@@ -18,6 +18,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.cloud.language.v1.Document;
+import com.google.cloud.language.v1.Document.Type;
+import com.google.cloud.language.v1.LanguageServiceClient;
+import com.google.cloud.language.v1.Sentiment;
+
 /**
  * Servlet implementation class MyServlet
  */
@@ -38,14 +43,24 @@ public class MyServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		System.out.println(" * Post recieved...");	
 		String idreview = java.net.URLDecoder.decode(getBody(request), StandardCharsets.UTF_8.name());
-		
+
 		int id = getID(idreview);
 		String review = getReview(idreview);
-		
-		System.out.println("   * ID is: " + id);
-		System.out.println("   * Review is: " + review);
-		
-		
+
+		System.out.println("   * Professor ID: " + id);
+		System.out.println("   * Review: " + review);
+
+		// Instantiates a client
+		try (LanguageServiceClient language = LanguageServiceClient.create()) {
+			// The text to analyze
+			Document doc = Document.newBuilder()
+					.setContent(review).setType(Type.PLAIN_TEXT).build();
+
+			// Detects the sentiment of the text
+			Sentiment sentiment = language.analyzeSentiment(doc).getDocumentSentiment();
+			
+			System.out.printf("   * Sentiment: %s%n", sentiment.getScore());
+		}
 	}
 
 	private int getID(String idreview) throws UnsupportedEncodingException, IOException {
