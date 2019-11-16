@@ -18,6 +18,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.cloud.language.v1.Document;
+import com.google.cloud.language.v1.Document.Type;
+import com.google.cloud.language.v1.LanguageServiceClient;
+import com.google.cloud.language.v1.Sentiment;
+
 /**
  * Servlet implementation class MyServlet
  */
@@ -64,8 +69,22 @@ public class MyServlet extends HttpServlet {
 		String[] newStrings = idreview.split("=", 3);
 		String review = newStrings[2];
 		
-		System.out.println(id);
-		System.out.println(review);
+		System.out.println("PROFID: " + id);
+		System.out.println("REVIEW: " + review);
+		
+		// Instantiates a client
+	    try (LanguageServiceClient language = LanguageServiceClient.create()) {
+
+	      // The text to analyze
+	      Document doc = Document.newBuilder()
+	          .setContent(review).setType(Type.PLAIN_TEXT).build();
+
+	      // Detects the sentiment of the text
+	      Sentiment sentiment = language.analyzeSentiment(doc).getDocumentSentiment();
+
+	      System.out.printf("Text: %s%n", review);
+	      System.out.printf("Sentiment: %s, %s%n", sentiment.getScore(), sentiment.getMagnitude());
+	    }
 	}
 
 	private String getBody(HttpServletRequest request) throws IOException {

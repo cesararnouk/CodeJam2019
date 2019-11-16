@@ -9,7 +9,7 @@ local.properties
 .settings/
 .loadpath
 .recommenders
-
+./WebConent/META-INF/key.json
 # External tool builders
 .externalToolBuilders/
 
