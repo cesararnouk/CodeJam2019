@@ -1,12 +1,11 @@
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -67,7 +66,6 @@ public class MyServlet extends HttpServlet {
 
 	private String getReview(String idreview) throws UnsupportedEncodingException, IOException {
 		String[] newStrings = idreview.split("=", 3);
-
 		return newStrings[2];
 	}
 
