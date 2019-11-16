@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
@@ -25,47 +26,49 @@ import javax.servlet.http.HttpServletResponse;
 public class MyServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
 	public MyServlet() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		RequestDispatcher view = request.getRequestDispatcher("index.html");
 		view.forward(request, response);
 		System.out.println(" * Get recieved...");
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println(" * Post recieved...");
+		System.out.println(" * Post recieved...");	
 		String idreview = java.net.URLDecoder.decode(getBody(request), StandardCharsets.UTF_8.name());
 		
+		int id = getID(idreview);
+		String review = getReview(idreview);
+		
+		System.out.println("   * ID is: " + id);
+		System.out.println("   * Review is: " + review);
+		
+		
+	}
+
+	private int getID(String idreview) throws UnsupportedEncodingException, IOException {
 		Pattern p = Pattern.compile("(\\d+)");
 		Matcher m = p.matcher(idreview.substring(3,6));
 		List<String> tokens = new LinkedList<String>();
 		int id = 0;
-		
+
 		while(m.find())
 		{
 			String token = m.group( 1 ); //group 0 is always the entire match
 			tokens.add(token);
 			id = Integer.parseInt(token);
 		}
-		
+
+		return id;
+	}
+
+	private String getReview(String idreview) throws UnsupportedEncodingException, IOException {
 		String[] newStrings = idreview.split("=", 3);
-		String review = newStrings[2];
-		
-		System.out.println(id);
-		System.out.println(review);
+
+		return newStrings[2];
 	}
 
 	private String getBody(HttpServletRequest request) throws IOException {
