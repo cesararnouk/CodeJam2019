@@ -7,16 +7,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function renderProfs(){
     // Query the server to send the prof list, await response (array, hopefully)
-    let profs = await queryProfs();
-    
+    let x = await queryProfs();
+    let profs = JSON.parse(x);
     console.log(profs);
-    
     // For each prof create an option in the select
     profs.forEach(prof => {
         console.log(prof);
         let option = document.createElement("option");
         option.value = prof.id;
-        option.innerHTML = `${prof.name}`;
+        option.innerHTML = `${prof.first_name} ${prof.last_name}`;
         document.getElementById("prof-list").appendChild(option);
     });
 }
@@ -34,12 +33,14 @@ document.getElementById("submit").onclick = function(){
     }
     
     let XHR = new XMLHttpRequest();
-    let params = '';
-    let data = "action=" + encodeURIComponent("REVIEW") + "id=" + encodeURIComponent(prof) + "text=" + encodeURIComponent(text);
+    
+    let data = "id=" + encodeURIComponent(prof) + "text=" + encodeURIComponent(text);
 
     // Define what happens on successful data submission
     XHR.addEventListener('load', function(event) {
         console.log('Yeah! Data sent and response loaded.');
+        document.getElementById('textbox').value = "";
+        document.getElementById('prof-list').selectedIndex = 0;
     });
 
     // Define what happens in case of error
@@ -51,10 +52,13 @@ document.getElementById("submit").onclick = function(){
     XHR.open('POST', serverurl, true);
 
     // Add the required HTTP header for form data POST requests
+    XHR.setRequestHeader("action", "REVIEW");
     XHR.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
     // Finally, send our data.
     XHR.send(data);
+    
+    
 }
 
 function queryProfs(){
@@ -62,12 +66,13 @@ function queryProfs(){
         let XHR = new XMLHttpRequest();
         // Set up our request
         XHR.open('POST', serverurl, true);
+        XHR.setRequestHeader('Accept', 'application/json');
+        XHR.setRequestHeader("action", "PROFS");
         let params = 'action=' + encodeURIComponent("PROFS");
         
         XHR.onreadystatechange = () => {
             if (XHR.readyState === XMLHttpRequest.DONE) {
                 if (XHR.status === 200) {
-                	console.log(XHR.responseText);
                     resolve(XHR.responseText);
                 } else {
                 	reject(XHR.status);
@@ -75,6 +80,6 @@ function queryProfs(){
             }
         }
         XHR.onerror = () => reject(XHR.statusText);
-        XHR.send(params);
+        XHR.send();
     });
 }

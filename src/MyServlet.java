@@ -44,7 +44,7 @@ public class MyServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		System.out.println(" * Post recieved...");	
-		String action = request.getParameter("action");
+		String action = request.getHeader("action");
 		
 		if (action != null && action.equals("REVIEW")) {
 			String idreview = java.net.URLDecoder.decode(getBody(request), StandardCharsets.UTF_8.name());
@@ -78,9 +78,7 @@ public class MyServlet extends HttpServlet {
 		        response.setContentType("application/json");
 		        response.setCharacterEncoding("UTF-8");
 		        
-		        Gson gson = new Gson();
-		        //out.print(gson.toJson(MyDB.getProfs()));
-		        out.print("kill me");
+		        out.print(MyDB.getProfs());
 		        out.flush();
 			} catch (Exception e) {
 				e.printStackTrace();
