@@ -1,13 +1,12 @@
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -51,9 +50,9 @@ public class MyServlet extends HttpServlet {
 			String idreview = java.net.URLDecoder.decode(getBody(request), StandardCharsets.UTF_8.name());
 			int id = getID(idreview);
 			String review = getReview(idreview);
-			
-			System.out.println("   * ID is: " + id);
-			System.out.println("   * Review is: " + review);
+
+			System.out.println("   * Professor ID: " + id);
+			System.out.println("   * Review: " + review);
 			
 			// Instantiates a client
 		    try (LanguageServiceClient language = LanguageServiceClient.create()) {
@@ -64,10 +63,8 @@ public class MyServlet extends HttpServlet {
 
 		      // Detects the sentiment of the text
 		      Sentiment sentiment = language.analyzeSentiment(doc).getDocumentSentiment();
-
-		      System.out.printf("Text: %s%n", review);
+		      
 		      System.out.printf("Sentiment: %s, %s%n", sentiment.getScore(), sentiment.getMagnitude());
-		      System.out.println("yeeett");
 		      MyDB.addReview(String.valueOf(id), review, String.valueOf(sentiment.getScore()));
 		    }
 		    catch (Exception e) {
@@ -109,7 +106,6 @@ public class MyServlet extends HttpServlet {
 
 	private String getReview(String idreview) throws UnsupportedEncodingException, IOException {
 		String[] newStrings = idreview.split("=", 3);
-
 		return newStrings[2];
 	}
 
