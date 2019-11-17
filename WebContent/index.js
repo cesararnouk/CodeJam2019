@@ -1,7 +1,5 @@
 const serverurl = "http://localhost:8080/CodeJam2019/MyServlet";
 
-const profsDB = [{id:1, name:'Charles Broth'}, {id:2, name:'Frank Jerrie'}, {id:3, name:'Donald Pavis'}];
-
 document.addEventListener('DOMContentLoaded', () => {
     console.log("Loaded...");
     renderProfs();
@@ -9,9 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function renderProfs(){
     // Query the server to send the prof list, await response (array, hopefully)
-    //let profs = await queryProfs();
-    let profs = profsDB;
-    // For each prof create a 
+    let profs = await queryProfs();
+    
+    console.log(profs);
+    
+    // For each prof create an option in the select
     profs.forEach(prof => {
         console.log(prof);
         let option = document.createElement("option");
@@ -34,7 +34,8 @@ document.getElementById("submit").onclick = function(){
     }
     
     let XHR = new XMLHttpRequest();
-    let data = "id=" + encodeURIComponent(prof) + "text=" + encodeURIComponent(text);
+    let params = '';
+    let data = "action=" + encodeURIComponent("REVIEW") + "id=" + encodeURIComponent(prof) + "text=" + encodeURIComponent(text);
 
     // Define what happens on successful data submission
     XHR.addEventListener('load', function(event) {
@@ -58,18 +59,22 @@ document.getElementById("submit").onclick = function(){
 
 function queryProfs(){
     return new Promise(function (resolve, reject) {
-        var XHR = new XMLHttpRequest();
+        let XHR = new XMLHttpRequest();
         // Set up our request
-        XHR.open('GET', serverurl+'/getprofs', true);
+        XHR.open('POST', serverurl, true);
+        let params = 'action=' + encodeURIComponent("PROFS");
+        
         XHR.onreadystatechange = () => {
-            if (httpRequest.readyState === XMLHttpRequest.DONE) {
-                if (httpRequest.status === 200) {
-                    return httpRequest.responseText;
+            if (XHR.readyState === XMLHttpRequest.DONE) {
+                if (XHR.status === 200) {
+                	console.log(XHR.responseText);
+                    resolve(XHR.responseText);
                 } else {
-                	alert('There was an issue getting the prof list...');
+                	reject(XHR.status);
                 }
             }
         }
-        XHR.send();
+        XHR.onerror = () => reject(XHR.statusText);
+        XHR.send(params);
     });
 }

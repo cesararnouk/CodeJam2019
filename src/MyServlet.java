@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -23,6 +24,7 @@ import com.google.cloud.language.v1.Document;
 import com.google.cloud.language.v1.Document.Type;
 import com.google.cloud.language.v1.LanguageServiceClient;
 import com.google.cloud.language.v1.Sentiment;
+import com.google.gson.Gson;
 
 /**
  * Servlet implementation class MyServlet
@@ -36,34 +38,57 @@ public class MyServlet extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		System.out.println(" * Get recieved...");
 		RequestDispatcher view = request.getRequestDispatcher("index.html");
 		view.forward(request, response);
-		System.out.println(" * Get recieved...");
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		System.out.println(" * Post recieved...");	
-		String idreview = java.net.URLDecoder.decode(getBody(request), StandardCharsets.UTF_8.name());
+		String action = request.getParameter("action");
 		
-		int id = getID(idreview);
-		String review = getReview(idreview);
-		
-		System.out.println("   * ID is: " + id);
-		System.out.println("   * Review is: " + review);
-		
-		// Instantiates a client
-	    try (LanguageServiceClient language = LanguageServiceClient.create()) {
+		if (action != null && action.equals("REVIEW")) {
+			String idreview = java.net.URLDecoder.decode(getBody(request), StandardCharsets.UTF_8.name());
+			int id = getID(idreview);
+			String review = getReview(idreview);
+			
+			System.out.println("   * ID is: " + id);
+			System.out.println("   * Review is: " + review);
+			
+			// Instantiates a client
+		    try (LanguageServiceClient language = LanguageServiceClient.create()) {
 
-	      // The text to analyze
-	      Document doc = Document.newBuilder()
-	          .setContent(review).setType(Type.PLAIN_TEXT).build();
+		      // The text to analyze
+		      Document doc = Document.newBuilder()
+		          .setContent(review).setType(Type.PLAIN_TEXT).build();
 
-	      // Detects the sentiment of the text
-	      Sentiment sentiment = language.analyzeSentiment(doc).getDocumentSentiment();
+		      // Detects the sentiment of the text
+		      Sentiment sentiment = language.analyzeSentiment(doc).getDocumentSentiment();
 
-	      System.out.printf("Text: %s%n", review);
-	      System.out.printf("Sentiment: %s, %s%n", sentiment.getScore(), sentiment.getMagnitude());
-		
+		      System.out.printf("Text: %s%n", review);
+		      System.out.printf("Sentiment: %s, %s%n", sentiment.getScore(), sentiment.getMagnitude());
+		      System.out.println("yeeett");
+		      MyDB.addReview(String.valueOf(id), review, String.valueOf(sentiment.getScore()));
+		    }
+		    catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		else if (action != null && action.equals("PROFS")) {
+			try {
+				System.out.println(" * Sending prof names...");
+				PrintWriter out = response.getWriter();
+		        response.setContentType("application/json");
+		        response.setCharacterEncoding("UTF-8");
+		        
+		        Gson gson = new Gson();
+		        //out.print(gson.toJson(MyDB.getProfs()));
+		        out.print("kill me");
+		        out.flush();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private int getID(String idreview) throws UnsupportedEncodingException, IOException {
