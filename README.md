@@ -12,9 +12,9 @@ Team Members
 ---------------------
 
  * Louis Mollick - 
- * Cesar Arnouk - 
  * Rodolphe Baladi - 
- * Sami Kahil - 
+ * Sami Kahil & Cesar Arnouk
+     worked on setting up the local server, connecting it to the website and the database, and figuring out how they are to interact
 
 Languages & Technologies Used:
 ---------------------
